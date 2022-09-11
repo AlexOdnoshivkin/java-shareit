@@ -13,5 +13,6 @@ public interface ItemService {
     ItemDto getById(long itemId);
 
     Stream<ItemDto> searchItem(String text);
+
     Stream<ItemDto> getItems(long userId);
 }
