@@ -10,11 +10,8 @@ public interface ItemService {
 
     ItemDto updateItem(Item updatedItem, long itemId, long userId);
 
-    Stream<ItemDto> getAllItems();
-
-    Stream<ItemDto> getItemByUser(long userId);
-
     ItemDto getById(long itemId);
 
     Stream<ItemDto> searchItem(String text);
+    Stream<ItemDto> getItems(long userId);
 }

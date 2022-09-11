@@ -11,9 +11,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -48,12 +45,7 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getUserItems(@RequestHeader("X-Sharer-User-Id") long userId) {
-        if (userId == 0) {
-            log.info("Получен запрос на получение всех предметов");
-            return itemService.getAllItems().collect(Collectors.toList());
-        } else {
-            log.info("Получен запрос на получение списка предметов пользователя с id {}", userId);
-            return itemService.getItemByUser(userId).collect(Collectors.toList());
-        }
+        log.info("Получен запрос на получение списка предметов пользователя с id {}", userId);
+        return itemService.getItems(userId).collect(Collectors.toList());
     }
 }

@@ -51,17 +51,6 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapping(itemRepository.add(item, userId));
     }
 
-    @Override
-    public Stream<ItemDto> getAllItems() {
-        return itemRepository.findAll().map(ItemMapper::mapping);
-    }
-
-    @Override
-    public Stream<ItemDto> getItemByUser(long userId) {
-        return itemRepository.getUserItems(userId).stream()
-                .map(itemRepository::getById)
-                .map(ItemMapper::mapping);
-    }
 
     @Override
     public ItemDto getById(long itemId) {
@@ -74,14 +63,32 @@ public class ItemServiceImpl implements ItemService {
             return Stream.empty();
         }
         Stream<Item> findByName = itemRepository.findAll()
-                .filter((Item item) -> item.getName()
-                        .toLowerCase().contains(text.toLowerCase()));
+                .filter((Item item) -> item.getName().toLowerCase().contains(text.toLowerCase()));
         Stream<Item> findByDescription = itemRepository.findAll()
-                .filter((Item item) -> item.getDescription()
-                        .toLowerCase().contains(text.toLowerCase()));
+                .filter((Item item) -> item.getDescription().toLowerCase().contains(text.toLowerCase()));
         return Stream.concat(findByDescription, findByName)
                 .distinct()
                 .filter(Item::getAvailable)
                 .map(ItemMapper::mapping);
+    }
+
+    @Override
+    public Stream<ItemDto> getItems(long userId) {
+        if (userId == 0) {
+            return getAllItems();
+        } else {
+            if (userService.getUserById(userId) == null) {
+                throw new EntityNotFoundException("Пользователь не найден");
+            }
+            return getItemByUser(userId);
+        }
+    }
+
+    private Stream<ItemDto> getAllItems() {
+        return itemRepository.findAll().map(ItemMapper::mapping);
+    }
+
+    private Stream<ItemDto> getItemByUser(long userId) {
+        return itemRepository.getUserItems(userId).stream().map(itemRepository::getById).map(ItemMapper::mapping);
     }
 }
