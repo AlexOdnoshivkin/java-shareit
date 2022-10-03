@@ -8,7 +8,11 @@ public class UserMapper {
         throw new AssertionError();
     }
 
-    public static UserDto mapping(User user) {
-        return new UserDto(user.getId(), user.getName(), user.getEmail());
+    public static ru.practicum.shareit.user.dto.UserDto toUserDto(User user) {
+        return new ru.practicum.shareit.user.dto.UserDto(user.getId(), user.getName(), user.getEmail());
+    }
+
+    public static User toUser(ru.practicum.shareit.user.dto.UserDto userDto) {
+        return new User(userDto.getId(), userDto.getName(), userDto.getEmail());
     }
 }
