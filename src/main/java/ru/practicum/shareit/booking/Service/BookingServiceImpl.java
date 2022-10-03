@@ -34,9 +34,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingReturnDto addBooking(BookingDto bookingDto, Long userId) {
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
-            throw new IllegalStateException("Дата начала бронирования не может быть позже даты завершения");
-        }
+        bookingTimeValidate(bookingDto);
         Item item = itemService.getItemById(bookingDto.getItemId());
         if (!item.getAvailable()) {
             throw new EntityNotAvailableException("Предмет недоступен");
@@ -94,22 +92,22 @@ public class BookingServiceImpl implements BookingService {
         userService.getUserById(userId);
         switch (state) {
             case "FUTURE":
-                return bookingRepository.findBookingsByBookerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now())
+                return bookingRepository.findFutureBookingsByBooker(userId, LocalDateTime.now())
                         .stream()
                         .map(BookingMapper::toBookingReturnDto)
                         .collect(Collectors.toList());
             case "ALL":
-                return bookingRepository.findBookingsByBookerIdOrderByStartDesc(userId).stream()
+                return bookingRepository.findBookingsByBooker(userId).stream()
                         .map(BookingMapper::toBookingReturnDto)
                         .collect(Collectors.toList());
             case "WAITING":
                 return bookingRepository
-                        .findBookingsByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING).stream()
+                        .findBookingsByBookerAndStatus(userId, BookingStatus.WAITING).stream()
                         .map(BookingMapper::toBookingReturnDto)
                         .collect(Collectors.toList());
             case "REJECTED":
                 return bookingRepository
-                        .findBookingsByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED).stream()
+                        .findBookingsByBookerAndStatus(userId, BookingStatus.REJECTED).stream()
                         .map(BookingMapper::toBookingReturnDto)
                         .collect(Collectors.toList());
             case "CURRENT":
@@ -132,24 +130,24 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case "FUTURE":
                 return itemsId.flatMap((id) ->
-                                bookingRepository.findBookingsByItemIdAndStartIsAfterOrderByStartDesc(
+                                bookingRepository.findFutureBookingsByItem(
                                         id, LocalDateTime.now()).stream())
                         .map(BookingMapper::toBookingReturnDto)
                         .sorted((t1, t2) -> -t1.getStart().compareTo(t2.getStart()))
                         .collect(Collectors.toList());
 
             case "ALL":
-                return itemsId.flatMap((id) -> bookingRepository.findBookingsByItemIdOrderByStartDesc(id).stream())
+                return itemsId.flatMap((id) -> bookingRepository.findBookingsByItem(id).stream())
                         .map(BookingMapper::toBookingReturnDto)
                         .collect(Collectors.toList());
             case "WAITING":
                 return itemsId.flatMap((id) -> bookingRepository
-                                .findBookingsByItemIdAndStatusOrderByStartDesc(id, BookingStatus.WAITING).stream())
+                                .findBookingsByItemAndStatus(id, BookingStatus.WAITING).stream())
                         .map(BookingMapper::toBookingReturnDto)
                         .collect(Collectors.toList());
             case "REJECTED":
                 return itemsId.flatMap((id) -> bookingRepository
-                                .findBookingsByItemIdAndStatusOrderByStartDesc(id, BookingStatus.REJECTED).stream())
+                                .findBookingsByItemAndStatus(id, BookingStatus.REJECTED).stream())
                         .map(BookingMapper::toBookingReturnDto)
                         .collect(Collectors.toList());
             case "CURRENT":
@@ -164,6 +162,12 @@ public class BookingServiceImpl implements BookingService {
                         .collect(Collectors.toList());
             default:
                 throw new EntityNotAvailableException("Unknown state: UNSUPPORTED_STATUS");
+        }
+    }
+
+    private void bookingTimeValidate(BookingDto bookingDto) {
+        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
+            throw new IllegalStateException("Дата начала бронирования не может быть позже даты завершения");
         }
     }
 

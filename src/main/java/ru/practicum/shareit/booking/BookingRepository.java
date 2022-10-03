@@ -7,21 +7,31 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findBookingsByBookerIdOrderByStartDesc(Long bookerId);
+    @Query(value = "select b from Booking as b where b.booker.id = ?1 order by b.start desc")
+    List<Booking> findBookingsByBooker(Long bookerId);
 
-    List<Booking> findBookingsByBookerIdAndStartIsAfterOrderByStartDesc(Long bookerId, LocalDateTime dateTime);
+    @Query(value = "select b from Booking as b where b.booker.id = ?1 and b.start > ?2 order by b.start desc")
+    List<Booking> findFutureBookingsByBooker(Long bookerId, LocalDateTime dateTime);
 
-    List<Booking> findBookingsByItemIdOrderByStartDesc(Long itemId);
+    @Query(value = "select b from Booking as b where b.item.id = ?1 order by b.start desc")
+    List<Booking> findBookingsByItem(Long itemId);
 
-    List<Booking> findBookingsByItemIdAndStartIsAfterOrderByStartDesc(Long bookerId, LocalDateTime dateTime);
+    @Query(value = "select b from Booking as b where b.item.id = ?1 and b.start > ?2 order by b.start desc")
+    List<Booking> findFutureBookingsByItem(Long bookerId, LocalDateTime dateTime);
 
-    List<Booking> findBookingsByItemIdOrderByStartAsc(Long itemId);
+    @Query(value = "select b from Booking as b where b.item.id = ?1 order by b.start asc")
+    List<Booking> findBookingsByItemAsc(Long itemId);
 
-    List<Booking> findBookingsByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status);
 
-    List<Booking> findBookingsByItemIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status);
+    @Query(value = "select b from Booking as b where b.item.id = ?1 and b.status = ?2 order by b.start desc")
+    List<Booking> findBookingsByItemAndStatus(Long bookerId, BookingStatus status);
 
-    List<Booking> findBookingByBookerIdAndItemIdAndStatusNot(Long userId, Long itemId, BookingStatus status);
+    @Query(value = "select b from Booking as b where b.booker.id = ?1 and b.status = ?2 order by b.start desc")
+    List<Booking> findBookingsByBookerAndStatus(Long bookerId, BookingStatus status);
+
+    @Query(value = "select b from Booking as b " +
+            "where b.booker.id =?1 and b.item.id = ?2 and b.status <> ?3 order by b.start desc")
+    List<Booking> findBookingsByBookerAndItemAndStatusNot(Long userId, Long itemId, BookingStatus status);
 
     @Query(value = "select b from Booking as b WHERE b.start < ?2 and b.end > ?2 and b.booker.id = ?1 ORDER BY b.start")
     List<Booking> findCurrentBookingForUser(Long userId, LocalDateTime time);

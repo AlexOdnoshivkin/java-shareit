@@ -126,7 +126,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         List<Booking> bookings = bookingRepository
-                .findBookingByBookerIdAndItemIdAndStatusNot(userId, itemId, BookingStatus.REJECTED);
+                .findBookingsByBookerAndItemAndStatusNot(userId, itemId, BookingStatus.REJECTED);
         if (bookings.isEmpty()) {
             throw new IllegalStateException("У предмета не было бронирований");
         }
@@ -134,6 +134,7 @@ public class ItemServiceImpl implements ItemService {
         for (Booking booking : bookings) {
             if (booking.getEnd().isBefore(LocalDateTime.now())) {
                 future = false;
+                break;
             }
         }
         if (future) {
@@ -160,7 +161,7 @@ public class ItemServiceImpl implements ItemService {
     private ItemDto setLastAndNextBookingForItem(ItemDto itemDto) {
         Booking lastBooking = null;
         Booking nextBooking = null;
-        List<Booking> bookings = bookingRepository.findBookingsByItemIdOrderByStartAsc(itemDto.getId());
+        List<Booking> bookings = bookingRepository.findBookingsByItemAsc(itemDto.getId());
         for (int i = 0; i < bookings.size(); i++) {
             Booking booking = bookings.get(i);
             if (booking.getStart().isAfter(LocalDateTime.now())) {
