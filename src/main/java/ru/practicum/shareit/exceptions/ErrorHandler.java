@@ -12,7 +12,8 @@ import javax.validation.ConstraintViolationException;
 public class ErrorHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class,
-            ConstraintViolationException.class})
+            ConstraintViolationException.class, EntityNotAvailableException.class,
+            IllegalStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse validationExceptionHandler(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());

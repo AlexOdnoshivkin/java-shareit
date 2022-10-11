@@ -2,12 +2,13 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.Create;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,16 +20,25 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody Item item) {
-        log.info("Получен запрос на добавление предмета {} пользователем с id {}", item, userId);
-        return itemService.addItem(item, userId);
+    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId, @Validated({Create.class}) @RequestBody ItemDto itemDto) {
+        log.info("Получен запрос на добавление предмета {} пользователем с id {}", itemDto, userId);
+        return itemService.addItem(itemDto, userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                                 @PathVariable long itemId,
+                                 @Validated @RequestBody CommentDto commentDto) {
+        log.info("Получен запрос на добавление комментария {} к предмету {} " +
+                "пользователем с id {}", commentDto, itemId, userId);
+        return itemService.addComment(userId, itemId, commentDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody Item item,
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody ItemDto itemDto,
                               @PathVariable long itemId) {
-        log.info("Получен запрос на обновление предмета {} пользователем с id {}", item, userId);
-        return itemService.updateItem(item, itemId, userId);
+        log.info("Получен запрос на обновление предмета {} пользователем с id {}", itemDto, userId);
+        return itemService.updateItem(itemDto, itemId, userId);
     }
 
     @GetMapping("/search")
@@ -38,9 +48,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable long itemId) {
+    public ItemDto getItemById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId) {
         log.info("Получен запрос на получение предмета с id {}", itemId);
-        return itemService.getById(itemId);
+        return itemService.getById(itemId, userId);
     }
 
     @GetMapping

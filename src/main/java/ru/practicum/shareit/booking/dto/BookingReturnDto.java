@@ -3,22 +3,18 @@ package ru.practicum.shareit.booking.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.validation.EndNotInPast;
-import ru.practicum.shareit.validation.StartNotInPast;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class BookingDto {
+public class BookingReturnDto {
     private Long id;
     private BookingStatus status;
-    private Long bookerId;
-    private Long itemId;
-    @StartNotInPast
+    private UserDto booker;
+    private ItemDto item;
     private LocalDateTime start;
-    @EndNotInPast
     private LocalDateTime end;
-    private String itemName;
-
 }

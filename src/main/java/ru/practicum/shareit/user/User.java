@@ -1,17 +1,27 @@
 package ru.practicum.shareit.user;
 
-import lombok.Data;
+import lombok.*;
+import ru.practicum.shareit.item.model.Item;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
-@Data
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 public class User {
-    private long id;
-    @NotBlank
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "name")
     private String name;
-    @NotEmpty
-    @Email
+    @Column(name = "email")
     private String email;
+    @OneToMany(mappedBy = "userId")
+    private final Set<Item> userItems = new HashSet<>();
 }
