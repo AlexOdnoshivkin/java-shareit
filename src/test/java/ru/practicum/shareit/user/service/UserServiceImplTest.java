@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,8 +37,8 @@ class UserServiceImplTest {
     private static UserDto userDto;
     private static User user;
 
-    @BeforeAll
-    static void createEntity() {
+    @BeforeEach
+    void createEntity() {
         userDto = new UserDto();
         userDto.setId(1L);
         userDto.setName("TestUser");
@@ -68,7 +69,22 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateUser() {
+    void updateUserWhenUserNotFound() {
+        UserDto updatedUserDto = new UserDto(); // Обновлённые данные юзера
+        updatedUserDto.setId(1L);
+        updatedUserDto.setEmail("update@gmail.com");
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        userService.updateUser(updatedUserDto.getId(), updatedUserDto));
+
+        assertEquals(thrown.getMessage(), "Пользователь не найден");
+    }
+
+    @Test
+    void updateUserWhenUpdateEmail() {
+        // Обновляем почту
         UserDto updatedUserDto = new UserDto(); // Обновлённые данные юзера
         updatedUserDto.setId(1L);
         updatedUserDto.setEmail("update@gmail.com");
@@ -83,44 +99,48 @@ class UserServiceImplTest {
         trueUserDto.setName(user.getName());
         trueUserDto.setEmail(updatedUserDto.getEmail());
 
-        // Обновляем почту
         UserDto savedUser = userService.updateUser(updatedUserDto.getId(), updatedUserDto);
 
         assertNotNull(savedUser);
         assertEquals(trueUserDto, savedUser);
-
-        updatedUserDto.setEmail(null);
-        updatedUserDto.setName("UpdateName");
-        updatedUser.setName("UpdateName");
-        updatedUser.setName(updatedUserDto.getName());
-        updatedUser.setEmail(user.getEmail());
-        trueUserDto.setName("UpdateName");
-        trueUserDto.setEmail(user.getEmail());
-
-        // Обновляем имя
-        savedUser = userService.updateUser(updatedUserDto.getId(), updatedUserDto);
-
-        assertEquals(trueUserDto, savedUser);
-
-        // Проверяем исключение, если пользователь не найден
-        try {
-            when(userRepository.findById(updatedUserDto.getId())).thenReturn(Optional.empty());
-            when(userService.updateUser(updatedUserDto.getId(), updatedUserDto))
-                    .thenThrow(new EntityNotFoundException("Пользователь не найден"));
-        } catch (EntityNotFoundException e) {
-            assertEquals("Пользователь не найден", e.getMessage());
-        }
     }
 
     @Test
-    void getUserById() {
-        // Проверяем исключение, если пользователь не найден
-        try {
-            when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
-        } catch (EntityNotFoundException e) {
-            assertEquals("Пользователь не найден", e.getMessage());
-        }
-        // Проверяем корректный возврат
+    void updateUserWhenUpdateName() {
+        // Обновляем почту
+        UserDto updatedUserDto = new UserDto(); // Обновлённые данные юзера
+        updatedUserDto.setId(1L);
+        updatedUserDto.setName("updatedName");
+        User updatedUser = new User(); // оюновлённый юзер, возвращённый репозиторием
+        updatedUser.setId(1L);
+        updatedUser.setName(updatedUserDto.getName());
+        updatedUser.setEmail(user.getEmail());
+        when(userRepository.findById(updatedUserDto.getId())).thenReturn(Optional.of(user));
+        when(userRepository.save(any())).thenReturn(updatedUser);
+        UserDto trueUserDto = new UserDto(); // Обновлённый юзер, которого мы ожидаем получить
+        trueUserDto.setId(1L);
+        trueUserDto.setName(updatedUserDto.getName());
+        trueUserDto.setEmail(user.getEmail());
+
+        UserDto savedUser = userService.updateUser(updatedUserDto.getId(), updatedUserDto);
+
+        assertNotNull(savedUser);
+        assertEquals(trueUserDto, savedUser);
+    }
+
+    @Test
+    void getUserByIdWhenUserNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        userService.getUserById(100L));
+
+        assertEquals(thrown.getMessage(), "Пользователь не найден");
+    }
+
+    @Test
+    void getUserByIdWhenCorrectFound() {
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(userRepository.save(any())).thenReturn(user);
 
@@ -141,6 +161,17 @@ class UserServiceImplTest {
     }
 
     @Test
+    void getUserItemsWhenUserNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        userService.getUserItems(100L));
+
+        assertEquals(thrown.getMessage(), "Пользователь не найден");
+    }
+
+    @Test
     void getUserItems() {
         Item item1 = new Item();
         item1.setId(1L);
@@ -158,31 +189,26 @@ class UserServiceImplTest {
         items.add(item2);
         user.setUserItems(items);
 
-        // Проверяем исключение, если пользователь не найден
-        try {
-            when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
-        } catch (EntityNotFoundException e) {
-            assertEquals("Пользователь не найден", e.getMessage());
-        }
-
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         Set<Item> returnedItems = userService.getUserItems(user.getId());
 
         assertEquals(items, returnedItems);
+    }
 
+    @Test
+    void deleteUserWhenUserNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        userService.deleteUser(100L));
+
+        assertEquals(thrown.getMessage(), "Пользователь не найден");
     }
 
     @Test
     void deleteUser() {
-        // Проверяем исключение, если пользователь не найден
-        try {
-            when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
-        } catch (EntityNotFoundException e) {
-            assertEquals("Пользователь не найден", e.getMessage());
-        }
-
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         userService.deleteUser(user.getId());

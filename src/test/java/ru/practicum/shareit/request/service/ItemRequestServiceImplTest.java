@@ -1,13 +1,12 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemToRequestDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -51,37 +50,43 @@ class ItemRequestServiceImplTest {
         em.persist(item);
     }
 
-    @Test
-    void addItemRequest() {
-        ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
-        // Проверяем сценарий, когда пользователь не найден
-        try {
-            itemRequestService.addItemRequest(itemRequestDto, 100L);
-        } catch (EntityNotFoundException e) {
-            assertEquals("Пользователь не найден", e.getMessage());
-        }
 
-        // Проверяем корректную работу
+    @Test
+    void addItemRequestWhenUserNotFound() {
+        // Проверяем сценарий, когда пользователь не найден
+        ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
+
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        itemRequestService.addItemRequest(itemRequestDto, 100L));
+
+        assertEquals(thrown.getMessage(), "Пользователь не найден");
+    }
+
+    @Test
+    void addItemRequestWhenCorrect() {
+        ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
+
         ItemRequestDto result = itemRequestService.addItemRequest(itemRequestDto, user.getId());
 
         item.setItemRequest(new ItemRequest());
         itemRequestDto.setOwner(user.getId());
-        ItemToRequestDto itemToRequestDto = ItemMapper.toItemToRequestDto(item);
-        itemRequestDto.setItems(List.of(itemToRequestDto));
 
         assertNotNull(result);
         assertEquals(itemRequestDto.getOwner(), result.getOwner());
     }
 
     @Test
-    void getOwnRequestsByUser() {
-        // Проверяем сценарий, когда пользователь не найден
-        try {
-            itemRequestService.getOwnRequestsByUser(100L);
-        } catch (EntityNotFoundException e) {
-            assertEquals("Пользователь не найден", e.getMessage());
-        }
+    void getOwnRequestsByUserWhenUserNotFound() {
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        itemRequestService.getOwnRequestsByUser(100L));
 
+        assertEquals(thrown.getMessage(), "Пользователь не найден");
+    }
+
+    @Test
+    void getOwnRequestsByUserWhenCorrect() {
         // Проверяем корректный сценарий
         itemRequest.setOwnerId(user.getId());
         em.persist(itemRequest);
@@ -94,14 +99,16 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getAllRequestsOtherUsers() {
-        // Проверяем сценарий, когда пользователь не найден
-        try {
-            itemRequestService.getAllRequestsOtherUsers(0, 10, 100L);
-        } catch (EntityNotFoundException e) {
-            assertEquals("Пользователь не найден", e.getMessage());
-        }
+    void getAllRequestsOtherUsersWhenUserNotFound() {
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        itemRequestService.getAllRequestsOtherUsers(0, 10, 100L));
 
+        assertEquals(thrown.getMessage(), "Пользователь не найден");
+    }
+
+    @Test
+    void getAllRequestsOtherUsersWhenCorrect() {
         // Проверяем корректный сценарий
         User user2 = new User();
         user2.setName("Test2User");
@@ -118,24 +125,31 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getRequestById() {
+    void getRequestByIdWhenUserNotFound() {
+        // Проверяем сценарий, когда пользователь не найден
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        itemRequestService.getRequestById(100L, itemRequest.getId()));
+
+        assertEquals(thrown.getMessage(), "Пользователь не найден");
+    }
+
+    @Test
+    void getRequestByIdWhenRequestNotFound() {
+        // Проверяем сценарий, когда запрос не найден
+        EntityNotFoundException thrown = Assertions
+                .assertThrows(EntityNotFoundException.class, () ->
+                        itemRequestService.getRequestById(user.getId(), 100L));
+
+        assertEquals(thrown.getMessage(), "Запрос не найден");
+    }
+
+    @Test
+    void getRequestByIdWhenCorrect() {
+        // Проверяем корректный сценарий
         itemRequest.setOwnerId(user.getId());
         em.persist(itemRequest);
-        // Проверяем сценарий, когда пользователь не найден
-        try {
-            itemRequestService.getRequestById(100L, itemRequest.getId());
-        } catch (EntityNotFoundException e) {
-            assertEquals("Пользователь не найден", e.getMessage());
-        }
 
-        // Проверяем сценарий, когда запрос не найден
-        try {
-            itemRequestService.getRequestById(user.getId(), 100L);
-        } catch (EntityNotFoundException e) {
-            assertEquals("Запрос не найден", e.getMessage());
-        }
-
-        // Проверяем корректный сценарий
         ItemRequestDto result = itemRequestService.getRequestById(user.getId(), itemRequest.getId());
 
         assertNotNull(result);

@@ -15,8 +15,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.Service.BookingService;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingReturnDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookingController.class)
 class BookingControllerTest {
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
     @Autowired
     private BookingController controller;
 
@@ -43,8 +41,6 @@ class BookingControllerTest {
     private BookingReturnDto bookingReturnDto;
 
     private BookingDto bookingDto;
-    private ItemDto itemDto = new ItemDto();
-    private UserDto userDto = new UserDto();
 
     @BeforeEach
     void setUp() {

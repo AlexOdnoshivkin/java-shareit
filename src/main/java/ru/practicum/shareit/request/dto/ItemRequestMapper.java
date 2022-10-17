@@ -10,9 +10,8 @@ import java.util.stream.Collectors;
 public class ItemRequestMapper {
 
     private ItemRequestMapper() {
-    }
 
-    ;
+    }
 
     public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
         ItemRequest itemRequest = new ItemRequest();
@@ -26,8 +25,8 @@ public class ItemRequestMapper {
     public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         List<ItemToRequestDto> items = itemRequest.getItems().stream()
-                        .map(ItemMapper::toItemToRequestDto)
-                                .collect(Collectors.toList());
+                .map(ItemMapper::toItemToRequestDto)
+                .collect(Collectors.toList());
         itemRequestDto.setId(itemRequest.getId());
         itemRequestDto.setDescription(itemRequest.getDescription());
         itemRequestDto.setOwner(itemRequest.getOwnerId());

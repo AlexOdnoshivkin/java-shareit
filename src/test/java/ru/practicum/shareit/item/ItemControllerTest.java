@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ItemController.class)
 class ItemControllerTest {
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
     @Autowired
     private ItemController controller;
 
