@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +24,5 @@ public class User {
     @Column(name = "email")
     private String email;
     @OneToMany(mappedBy = "userId")
-    private final Set<Item> userItems = new HashSet<>();
+    private Set<Item> userItems = new HashSet<>();
 }

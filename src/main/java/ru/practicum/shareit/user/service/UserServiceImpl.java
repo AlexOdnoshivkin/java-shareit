@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -27,7 +28,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ru.practicum.shareit.user.dto.UserDto updateUser(long userId, User updatedUser) {
+    public UserDto updateUser(long userId, UserDto updatedUserDto) {
+        User updatedUser = UserMapper.toUser(updatedUserDto);
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new EntityNotFoundException("Пользователь не найден");
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ru.practicum.shareit.user.dto.UserDto getUserById(long userId) {
+    public UserDto getUserById(long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new EntityNotFoundException("Пользователь не найден");
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Stream<ru.practicum.shareit.user.dto.UserDto> getAllUsers() {
+    public Stream<UserDto> getAllUsers() {
         return new ArrayList<>(userRepository.findAll()).stream().map(UserMapper::toUserDto);
     }
 

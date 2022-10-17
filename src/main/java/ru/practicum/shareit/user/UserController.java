@@ -13,33 +13,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/users")
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping(path = "/users")
 public class UserController {
     private final UserService userService;
 
     @PostMapping()
-    public ru.practicum.shareit.user.dto.UserDto postUser(@Validated({Create.class}) @RequestBody UserDto userDto) {
+    public UserDto postUser(@Validated({Create.class}) @RequestBody UserDto userDto) {
         log.info("Получен запрос на добавление пользователя {}", userDto);
         return userService.addUser(userDto);
     }
 
     @PatchMapping("/{userId}")
-    public ru.practicum.shareit.user.dto.UserDto patchUser(@Validated({Update.class}) @PathVariable long userId,
-                                                           @RequestBody User user) {
+    public UserDto patchUser(@Validated({Update.class}) @PathVariable long userId,
+                                                           @RequestBody UserDto user) {
         log.info("Получен запрос на обновление данных {} пользователя с id {}", user, userId);
         return userService.updateUser(userId, user);
     }
 
     @GetMapping()
-    public List<ru.practicum.shareit.user.dto.UserDto> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         log.info("Получен запрос на получение всех пользователей");
         return userService.getAllUsers().collect(Collectors.toList());
     }
 
     @GetMapping("/{userId}")
-    public ru.practicum.shareit.user.dto.UserDto getUserById(@PathVariable long userId) {
+    public UserDto getUserById(@PathVariable long userId) {
         log.info("Получен запрос на получение пользователя с id {}", userId);
         return userService.getUserById(userId);
     }
