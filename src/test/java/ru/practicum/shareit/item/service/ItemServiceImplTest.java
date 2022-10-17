@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.FromSizeRequest;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exceptions.EntityNotFoundException;
@@ -17,7 +15,6 @@ import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.EntityManager;
@@ -33,21 +30,15 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@SpringBootTest(
-        properties = "db.name = test",
-        webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemServiceImplTest {
 
     private final EntityManager em;
-    private final ItemRepository itemRepository;
-
     private final ItemService itemService;
-
     private User user;
     private Item item;
     private ItemDto itemDto;
-
 
     @BeforeEach
     void creteEntity() {
@@ -258,10 +249,6 @@ class ItemServiceImplTest {
         trueResult.add(itemDto);
 
         result = itemService.getItems(user.getId(), 0, 10).collect(Collectors.toList());
-
-        Pageable pageable = FromSizeRequest.of(0, 10);
-
-        List<Item> items = itemRepository.findItemsByUserId(1L, pageable);
 
         assertEquals(trueResult, result);
     }

@@ -28,9 +28,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@SpringBootTest(
-        properties = "db.name = test",
-        webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class BookingServiceImplTest {
     private final BookingService bookingService;
@@ -171,7 +169,6 @@ class BookingServiceImplTest {
 
         // Проверка сценария, если пользователь не является автором бронирования
         User user2 = new User();
-        user2 = new User();
         user2.setName("TestUser2");
         user2.setEmail("Test2@gmail.com");
         em.persist(user2);
