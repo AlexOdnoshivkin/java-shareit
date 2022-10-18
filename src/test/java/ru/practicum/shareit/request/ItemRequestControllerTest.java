@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -102,33 +103,33 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void getAllRequestsOtherUsersWithWrongFromValue() throws Exception {
-        try {
-            mockMvc.perform(get("/requests/all", 42L)
-                            .header("X-Sharer-User-Id", 1)
-                            .param("from", "-1")
-                            .param("size", "5"))
-                    .andExpect(status().isBadRequest());
-        } catch (NestedServletException e) {
-            assertEquals("Request processing failed; nested exception is javax.validation." +
-                    "ConstraintViolationException: getAllRequestsOtherUsers.from: " +
-                    "must be greater than or equal to 0", e.getMessage());
-        }
+    void getAllRequestsOtherUsersWithWrongFromValue() {
+        NestedServletException thrown = Assertions
+                .assertThrows(NestedServletException.class, () ->
+                        mockMvc.perform(get("/requests/all", 42L)
+                                        .header("X-Sharer-User-Id", 1)
+                                        .param("from", "-1")
+                                        .param("size", "5"))
+                                .andExpect(status().isBadRequest()));
+
+        assertEquals(thrown.getMessage(), "Request processing failed; nested exception is javax.validation." +
+                "ConstraintViolationException: getAllRequestsOtherUsers.from: " +
+                "must be greater than or equal to 0");
     }
 
     @Test
-    void getAllRequestsOtherUsersWithWrongSizeValue() throws Exception {
-        try {
-            mockMvc.perform(get("/requests/all", 42L)
-                            .header("X-Sharer-User-Id", 1)
-                            .param("from", "1")
-                            .param("size", "-5"))
-                    .andExpect(status().isBadRequest());
-        } catch (NestedServletException e) {
-            assertEquals("Request processing failed; nested exception is " +
-                    "javax.validation.ConstraintViolationException: " +
-                    "getAllRequestsOtherUsers.size: must be greater than 0", e.getMessage());
-        }
+    void getAllRequestsOtherUsersWithWrongSizeValue() {
+        NestedServletException thrown = Assertions
+                .assertThrows(NestedServletException.class, () ->
+                        mockMvc.perform(get("/requests/all", 42L)
+                                        .header("X-Sharer-User-Id", 1)
+                                        .param("from", "1")
+                                        .param("size", "-5"))
+                                .andExpect(status().isBadRequest()));
+
+        assertEquals(thrown.getMessage(), "Request processing failed; nested exception is " +
+                "javax.validation.ConstraintViolationException: " +
+                "getAllRequestsOtherUsers.size: must be greater than 0");
     }
 
 

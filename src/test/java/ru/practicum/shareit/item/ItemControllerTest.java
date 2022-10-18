@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -188,33 +189,33 @@ class ItemControllerTest {
     }
 
     @Test
-    void searchItemWithWrongFromValue() throws Exception {
-        try {
-            mockMvc.perform(get("/items/search?text=search", 42L)
-                            .header("X-Sharer-User-Id", 1)
-                            .param("from", "-1")
-                            .param("size", "5"))
-                    .andExpect(status().isBadRequest());
-        } catch (NestedServletException e) {
-            assertEquals("Request processing failed; nested exception is " +
-                    "javax.validation.ConstraintViolationException: searchItem.from:" +
-                    " must be greater than or equal to 0", e.getMessage());
-        }
+    void searchItemWithWrongFromValue() {
+        NestedServletException thrown = Assertions
+                .assertThrows(NestedServletException.class, () ->
+                        mockMvc.perform(get("/items/search?text=search", 42L)
+                                        .header("X-Sharer-User-Id", 1)
+                                        .param("from", "-1")
+                                        .param("size", "5"))
+                                .andExpect(status().isBadRequest()));
+
+        assertEquals(thrown.getMessage(), "Request processing failed; nested exception is " +
+                "javax.validation.ConstraintViolationException: searchItem.from:" +
+                " must be greater than or equal to 0");
     }
 
     @Test
-    void searchItemWithWrongSizeValue() throws Exception {
-        try {
-            mockMvc.perform(get("/items/search?text=search", 42L)
-                            .header("X-Sharer-User-Id", 1)
-                            .param("from", "1")
-                            .param("size", "0"))
-                    .andExpect(status().isBadRequest());
-        } catch (NestedServletException e) {
-            assertEquals("Request processing failed; nested exception is " +
-                    "javax.validation.ConstraintViolationException: searchItem.size:" +
-                    " must be greater than 0", e.getMessage());
-        }
+    void searchItemWithWrongSizeValue() {
+        NestedServletException thrown = Assertions
+                .assertThrows(NestedServletException.class, () ->
+                        mockMvc.perform(get("/items/search?text=search", 42L)
+                                        .header("X-Sharer-User-Id", 1)
+                                        .param("from", "1")
+                                        .param("size", "0"))
+                                .andExpect(status().isBadRequest()));
+
+        assertEquals(thrown.getMessage(), "Request processing failed; nested exception is " +
+                "javax.validation.ConstraintViolationException: searchItem.size:" +
+                " must be greater than 0");
     }
 
     @Test
