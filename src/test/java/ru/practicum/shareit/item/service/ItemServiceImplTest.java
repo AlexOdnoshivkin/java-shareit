@@ -71,7 +71,7 @@ class ItemServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemService.addItem(itemDto, 100L));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -83,7 +83,7 @@ class ItemServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemService.addItem(itemDto, user.getId()));
 
-        assertEquals(thrown.getMessage(), "Запрос не найден");
+        assertEquals("Запрос не найден", thrown.getMessage());
     }
 
     @Test
@@ -102,7 +102,7 @@ class ItemServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemService.updateItem(itemDto, 100L, user.getId()));
 
-        assertEquals(thrown.getMessage(), "Предмет отсутсвует у данного пользователя");
+        assertEquals("Предмет отсутсвует у данного пользователя", thrown.getMessage());
     }
 
     @Test
@@ -163,7 +163,7 @@ class ItemServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemService.getById(100L, user.getId()));
 
-        assertEquals(thrown.getMessage(), "Предмет не найден");
+        assertEquals("Предмет не найден", thrown.getMessage());
     }
 
     @Test
@@ -194,7 +194,7 @@ class ItemServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemService.getItemById(100L));
 
-        assertEquals(thrown.getMessage(), "Предмет не найден");
+        assertEquals("Предмет не найден", thrown.getMessage());
     }
 
     @Test
@@ -276,7 +276,7 @@ class ItemServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemService.getItems(100L, 0, 10));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -331,7 +331,7 @@ class ItemServiceImplTest {
                 .assertThrows(IllegalStateException.class, () ->
                         itemService.addComment(user.getId(), item.getId(), commentDto));
 
-        assertEquals(thrown.getMessage(), "У предмета не было бронирований");
+        assertEquals("У предмета не было бронирований", thrown.getMessage());
     }
 
     @Test
@@ -357,7 +357,7 @@ class ItemServiceImplTest {
                 .assertThrows(IllegalStateException.class, () ->
                         itemService.addComment(user.getId(), item.getId(), commentDto));
 
-        assertEquals(thrown.getMessage(), "Комментарий не может быть оставлен к будущему бронированию");
+        assertEquals("Комментарий не может быть оставлен к будущему бронированию", thrown.getMessage());
     }
 
     @Test

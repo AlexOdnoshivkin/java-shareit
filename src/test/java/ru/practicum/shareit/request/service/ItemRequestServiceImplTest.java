@@ -60,7 +60,7 @@ class ItemRequestServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemRequestService.addItemRequest(itemRequestDto, 100L));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -82,7 +82,7 @@ class ItemRequestServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemRequestService.getOwnRequestsByUser(100L));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -104,7 +104,7 @@ class ItemRequestServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemRequestService.getAllRequestsOtherUsers(0, 10, 100L));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -131,7 +131,7 @@ class ItemRequestServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemRequestService.getRequestById(100L, itemRequest.getId()));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -141,7 +141,7 @@ class ItemRequestServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         itemRequestService.getRequestById(user.getId(), 100L));
 
-        assertEquals(thrown.getMessage(), "Запрос не найден");
+        assertEquals("Запрос не найден", thrown.getMessage());
     }
 
     @Test

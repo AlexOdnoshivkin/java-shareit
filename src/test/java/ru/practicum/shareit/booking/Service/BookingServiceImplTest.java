@@ -91,7 +91,7 @@ class BookingServiceImplTest {
                 .assertThrows(EntityNotAvailableException.class, () ->
                         bookingService.addBooking(bookingDto, user.getId()));
 
-        assertEquals(thrown.getMessage(), "Предмет недоступен");
+        assertEquals("Предмет недоступен", thrown.getMessage());
     }
 
     @Test
@@ -109,7 +109,7 @@ class BookingServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         bookingService.addBooking(bookingDto, user.getId()));
 
-        assertEquals(thrown.getMessage(), "Невозможно забронировать свой предмет");
+        assertEquals("Невозможно забронировать свой предмет", thrown.getMessage());
     }
 
     @Test
@@ -151,7 +151,7 @@ class BookingServiceImplTest {
                 .assertThrows(IllegalStateException.class, () ->
                         bookingService.addBooking(bookingDto, user.getId()));
 
-        assertEquals(thrown.getMessage(), "Дата начала бронирования не может быть позже даты завершения");
+        assertEquals("Дата начала бронирования не может быть позже даты завершения", thrown.getMessage());
     }
 
     @Test
@@ -161,7 +161,7 @@ class BookingServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         bookingService.patchBooking(100L, user.getId(), true));
 
-        assertEquals(thrown.getMessage(), "Бронирование не найдено");
+        assertEquals("Бронирование не найдено", thrown.getMessage());
     }
 
     @Test
@@ -175,7 +175,7 @@ class BookingServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         bookingService.patchBooking(booking.getId(), 100L, true));
 
-        assertEquals(thrown.getMessage(), "статус бронирования может менять только владелец вещи");
+        assertEquals("статус бронирования может менять только владелец вещи", thrown.getMessage());
     }
 
     @Test
@@ -213,7 +213,7 @@ class BookingServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         bookingService.getBooking(100L, user.getId()));
 
-        assertEquals(thrown.getMessage(), "Бронирование не найдено");
+        assertEquals("Бронирование не найдено", thrown.getMessage());
     }
 
     @Test
@@ -231,7 +231,7 @@ class BookingServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         bookingService.getBooking(booking.getId(), user2.getId()));
 
-        assertEquals(thrown.getMessage(), "Пользователь не является владельцем вещи или автором бронирования");
+        assertEquals("Пользователь не является владельцем вещи или автором бронирования", thrown.getMessage());
     }
 
     @Test
@@ -391,7 +391,7 @@ class BookingServiceImplTest {
                 .assertThrows(EntityNotAvailableException.class, () ->
                         bookingService.getUserBookingList(user.getId(), "SPECIFIC", 0, 10));
 
-        assertEquals(thrown.getMessage(), "Unknown state: UNSUPPORTED_STATUS");
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", thrown.getMessage());
     }
 
     @Test
@@ -574,6 +574,6 @@ class BookingServiceImplTest {
         EntityNotAvailableException thrown = Assertions
                 .assertThrows(EntityNotAvailableException.class, () ->
                         bookingService.getUserBookingList(user.getId(), "SPECIFIC", 0, 10));
-        assertEquals(thrown.getMessage(), "Unknown state: UNSUPPORTED_STATUS");
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", thrown.getMessage());
     }
 }

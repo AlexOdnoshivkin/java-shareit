@@ -198,9 +198,9 @@ class ItemControllerTest {
                                         .param("size", "5"))
                                 .andExpect(status().isBadRequest()));
 
-        assertEquals(thrown.getMessage(), "Request processing failed; nested exception is " +
+        assertEquals("Request processing failed; nested exception is " +
                 "javax.validation.ConstraintViolationException: searchItem.from:" +
-                " must be greater than or equal to 0");
+                " must be greater than or equal to 0", thrown.getMessage());
     }
 
     @Test
@@ -213,9 +213,9 @@ class ItemControllerTest {
                                         .param("size", "0"))
                                 .andExpect(status().isBadRequest()));
 
-        assertEquals(thrown.getMessage(), "Request processing failed; nested exception is " +
+        assertEquals("Request processing failed; nested exception is " +
                 "javax.validation.ConstraintViolationException: searchItem.size:" +
-                " must be greater than 0");
+                " must be greater than 0", thrown.getMessage());
     }
 
     @Test

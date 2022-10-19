@@ -79,7 +79,7 @@ class UserServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         userService.updateUser(updatedUserDto.getId(), updatedUserDto));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -136,7 +136,7 @@ class UserServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         userService.getUserById(100L));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -168,7 +168,7 @@ class UserServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         userService.getUserItems(100L));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
@@ -204,7 +204,7 @@ class UserServiceImplTest {
                 .assertThrows(EntityNotFoundException.class, () ->
                         userService.deleteUser(100L));
 
-        assertEquals(thrown.getMessage(), "Пользователь не найден");
+        assertEquals("Пользователь не найден", thrown.getMessage());
     }
 
     @Test
