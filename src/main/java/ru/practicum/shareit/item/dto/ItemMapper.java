@@ -9,11 +9,34 @@ public class ItemMapper {
     }
 
     public static ItemDto toItemDto(Item item) {
-        return new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getAvailable());
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        if (item.getItemRequest() != null) {
+            itemDto.setRequestId(item.getItemRequest().getId());
+        }
+        return itemDto;
     }
 
     public static Item toItem(ItemDto itemDto) {
-        return new Item(itemDto.getId(), itemDto.getName(), itemDto.getDescription(), itemDto.getAvailable(), null);
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        return item;
+    }
+
+    public static ItemToRequestDto toItemToRequestDto(Item item) {
+        ItemToRequestDto itemToRequestDto = new ItemToRequestDto();
+        itemToRequestDto.setId(item.getId());
+        itemToRequestDto.setName(item.getName());
+        itemToRequestDto.setDescription(item.getDescription());
+        itemToRequestDto.setAvailable(item.getAvailable());
+        itemToRequestDto.setRequestId(item.getItemRequest().getId());
+        return itemToRequestDto;
     }
 
 

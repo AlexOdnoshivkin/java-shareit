@@ -24,10 +24,4 @@ public class ErrorHandler {
     public ErrorResponse notFoundExceptionHandler(final EntityNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
-
-    @ExceptionHandler(EntityAlreadyExistException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse conflictExceptionHandler(final EntityAlreadyExistException e) {
-        return new ErrorResponse(e.getMessage());
-    }
 }

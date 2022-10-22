@@ -15,9 +15,9 @@ public interface ItemService {
 
     Item getItemById(Long itemId);
 
-    Stream<ItemDto> searchItem(String text);
+    Stream<ItemDto> searchItem(String text, Integer from, Integer size);
 
-    Stream<ItemDto> getItems(long userId);
+    Stream<ItemDto> getItems(Long userId, Integer from, Integer size);
 
     CommentDto addComment(Long userId, Long itemId, CommentDto commentDto);
 }

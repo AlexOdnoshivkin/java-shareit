@@ -1,7 +1,9 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.FromSizeRequest;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
@@ -15,11 +17,12 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,6 +37,8 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingRepository bookingRepository;
 
+    private final ItemRequestRepository itemRequestRepository;
+
     @Override
     public ItemDto addItem(ItemDto itemDto, long userId) {
         Item item = ItemMapper.toItem(itemDto);
@@ -41,6 +46,14 @@ public class ItemServiceImpl implements ItemService {
             throw new EntityNotFoundException("Пользователь не найден");
         }
         item.setUserId(userId);
+        if (itemDto.getRequestId() != null) {
+            Optional<ItemRequest> optionalItemRequest =
+                    itemRequestRepository.getItemRequestById(itemDto.getRequestId());
+            if (optionalItemRequest.isEmpty()) {
+                throw new EntityNotFoundException("Запрос не найден");
+            }
+            item.setItemRequest(optionalItemRequest.get());
+        }
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -99,27 +112,29 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Stream<ItemDto> searchItem(String text) {
+    public Stream<ItemDto> searchItem(String text, Integer from, Integer size) {
+        Pageable pageable = FromSizeRequest.of(from, size);
         if (text.isEmpty()) {
             return Stream.empty();
         }
-        Stream<Item> findByName = itemRepository.findItemByNameContainsIgnoreCase(text).stream();
-        Stream<Item> findByDescription = itemRepository.findItemByDescriptionContainsIgnoreCase(text).stream();
-        return Stream.concat(findByDescription, findByName)
-                .distinct()
+        return itemRepository.searchItemsBuNameAndDescription(text, pageable).stream()
                 .filter(Item::getAvailable)
                 .map(ItemMapper::toItemDto);
     }
 
     @Override
-    public Stream<ItemDto> getItems(long userId) {
+    public Stream<ItemDto> getItems(Long userId, Integer from, Integer size) {
+        Pageable pageable = FromSizeRequest.of(from, size);
         if (userId == 0) {
             return getAllItems();
         } else {
             if (userService.getUserById(userId) == null) {
                 throw new EntityNotFoundException("Пользователь не найден");
             }
-            return getItemByUser(userId);
+            return itemRepository.findItemsByUserId(userId, pageable).stream()
+                    .peek(System.out::println)
+                    .map(ItemMapper::toItemDto)
+                    .map(this::setLastAndNextBookingForItem);
         }
     }
 
@@ -149,13 +164,6 @@ public class ItemServiceImpl implements ItemService {
 
     private Stream<ItemDto> getAllItems() {
         return itemRepository.findAll().stream().map(ItemMapper::toItemDto);
-    }
-
-    private Stream<ItemDto> getItemByUser(long userId) {
-        return userService.getUserItems(userId).stream()
-                .map(ItemMapper::toItemDto)
-                .sorted(Comparator.comparing(ItemDto::getId))
-                .map((this::setLastAndNextBookingForItem));
     }
 
     private ItemDto setLastAndNextBookingForItem(ItemDto itemDto) {
