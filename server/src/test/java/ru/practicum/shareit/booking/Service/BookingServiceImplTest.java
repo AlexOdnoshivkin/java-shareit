@@ -138,23 +138,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBookingWhenStartPastEnd() {
-        // Проерка валидации бронирования
-        item.setAvailable(true);
-        em.persist(item);
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setItemId(item.getId());
-        bookingDto.setStart(LocalDateTime.now().plusDays(10));
-        bookingDto.setEnd(LocalDateTime.now());
-
-        IllegalStateException thrown = Assertions
-                .assertThrows(IllegalStateException.class, () ->
-                        bookingService.addBooking(bookingDto, user.getId()));
-
-        assertEquals("Дата начала бронирования не может быть позже даты завершения", thrown.getMessage());
-    }
-
-    @Test
     void patchBookingWhenBookingNotFound() {
         // Проверка исключения, если бронирование не найдено
         EntityNotFoundException thrown = Assertions

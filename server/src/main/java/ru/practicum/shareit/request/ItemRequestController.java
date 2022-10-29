@@ -2,7 +2,6 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
@@ -11,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Validated
 @Slf4j
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
@@ -19,7 +17,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestDto postRequest(@RequestHeader("X-Sharer-User-Id") long userId,
-                                      @Validated @RequestBody ItemRequestDto itemRequestDto) {
+                                      @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Получен Post-запрос на создание запроса пользователем с id {}", userId);
         return itemRequestService.addItemRequest(itemRequestDto, userId);
     }

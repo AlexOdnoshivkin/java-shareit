@@ -37,6 +37,7 @@ public class BookingController {
     public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                            @RequestBody @Valid BookItemRequestDto requestDto) {
         log.info("Creating booking {}, userId={}", requestDto, userId);
+        validateBookingTime(requestDto);
         return bookingClient.bookItem(userId, requestDto);
     }
 
@@ -66,5 +67,11 @@ public class BookingController {
                                                @PathVariable long bookingId, @RequestParam boolean approved) {
         log.info("Patch-запрос на изменение бронирования. id бронирования {}, статус {}", bookingId, approved);
         return bookingClient.patchBooking(userId, bookingId, approved);
+    }
+
+    private void validateBookingTime(BookItemRequestDto bookingDto) {
+        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
+            throw new IllegalStateException("Дата начала бронирования не может быть позже даты завершения");
+        }
     }
 }

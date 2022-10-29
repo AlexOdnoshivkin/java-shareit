@@ -36,7 +36,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingReturnDto addBooking(BookingDto bookingDto, Long userId) {
-        validateBookingTime(bookingDto);
         Item item = itemService.getItemById(bookingDto.getItemId());
         if (!item.getAvailable()) {
             throw new EntityNotAvailableException("Предмет недоступен");
@@ -167,11 +166,4 @@ public class BookingServiceImpl implements BookingService {
                 throw new EntityNotAvailableException("Unknown state: UNSUPPORTED_STATUS");
         }
     }
-
-    private void validateBookingTime(BookingDto bookingDto) {
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
-            throw new IllegalStateException("Дата начала бронирования не может быть позже даты завершения");
-        }
-    }
-
 }
